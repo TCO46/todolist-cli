@@ -1,0 +1,9 @@
+[package]
+name = "cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+database = { workspace = true }
+rusqlite = { version = "0.35.0", features = ["bundled"] }
+clap = { version = "4.5.37", features = ["derive"] }
