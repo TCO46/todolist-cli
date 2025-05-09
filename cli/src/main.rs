@@ -22,6 +22,7 @@ enum Commands {
 fn main() -> Result<()> {
     let cli = Cli::parse();
     let conn = database::connect_db(DATABASE_PATH)?;
+    database::init_db(&conn)?;
 
     match &cli.command {
         Some(Commands::Count) => {
