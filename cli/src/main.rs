@@ -17,6 +17,13 @@ enum Commands {
     // Count the numbers of to do
     Count,
 
+    // Add new to do
+    Add { 
+        name: String,
+
+        #[arg(short, long, default_value = "none")]
+        description: String
+    },
 }
 
 fn main() -> Result<()> {
@@ -27,6 +34,11 @@ fn main() -> Result<()> {
     match &cli.command {
         Some(Commands::Count) => {
             println!("{:?}", database::job::count(&conn, "todo").unwrap());
+        }
+        Some(Commands::Add { name, description }) => {
+            let new_todo = TodoList::new(name, description);
+            let test = database::job::add_todo(&conn, &new_todo)?;
+            println!("{:?}", test);
         }
         None => {
             println!("Do nothing yet");
