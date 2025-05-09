@@ -1,5 +1,6 @@
 use rusqlite::{Connection, Result};
 
+pub mod models;
 pub mod job;
 
 pub fn connect_db(path: &str) -> Result<Connection> {
