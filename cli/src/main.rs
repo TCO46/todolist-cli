@@ -1,4 +1,5 @@
 use database;
+use crate::database::models::todo::TodoList;
 use rusqlite::Result;
 use clap::{Parser, Subcommand};
 const DATABASE_PATH: &str = "test.db";
