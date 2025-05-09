@@ -15,7 +15,8 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     // Count the numbers of to do
-    Count
+    Count,
+
 }
 
 fn main() -> Result<()> {
