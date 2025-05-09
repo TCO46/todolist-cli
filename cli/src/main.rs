@@ -24,6 +24,9 @@ enum Commands {
         #[arg(short, long, default_value = "none")]
         description: String
     },
+
+    // Show all to do list
+    Show
 }
 
 fn main() -> Result<()> {
@@ -39,6 +42,13 @@ fn main() -> Result<()> {
             let new_todo = TodoList::new(name, description);
             let test = database::job::add_todo(&conn, &new_todo)?;
             println!("{:?}", test);
+        }
+        Some(Commands::Show) => {
+            let todos = database::job::show_all(&conn)?;
+
+            for todo in todos {
+                println!("{:?}", todo);
+            }
         }
         None => {
             println!("Do nothing yet");
