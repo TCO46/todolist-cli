@@ -50,3 +50,10 @@ pub fn show_undone(conn: &Connection) -> Result<Vec<TodoList>> {
     let todos: Result<Vec<TodoList>> = todo_iter.collect();
     todos
 }
+
+pub fn done(conn: &Connection, id: i32) -> Result<()> {
+    let sql = format!("UPDATE todo SET done = 1 WHERE id = {}", id);
+    conn.execute(&sql, [])?;
+
+    Ok(())
+}

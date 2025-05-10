@@ -26,7 +26,10 @@ enum Commands {
     },
 
     // Show all to do list
-    Show
+    Show,
+
+    // Update status of todo to done
+    Done { id: i32 }
 }
 
 fn main() -> Result<()> {
@@ -50,6 +53,10 @@ fn main() -> Result<()> {
             for todo in todos {
                 println!("{:?}", todo);
             }
+        }
+        Some(Commands::Done { id }) => {
+            database::job::done(&conn, *id)?;
+            println!("Done {}", id);
         }
         None => {
             let todos = database::job::show_undone(&conn)?;
