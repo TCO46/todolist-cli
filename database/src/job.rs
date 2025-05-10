@@ -35,3 +35,17 @@ pub fn show_all(conn: &Connection) -> Result<Vec<TodoList>> {
     let todos: Result<Vec<TodoList>> = todo_iter.collect();
     todos
 }
+pub fn show_undone(conn: &Connection) -> Result<Vec<TodoList>> {
+    let mut stmt = conn.prepare("SELECT * FROM todo WHERE done = 0")?;
+    let todo_iter = stmt.query_map([], |row| {
+        Ok(TodoList {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            description: row.get(2)?,
+            done: row.get(3)?
+        })
+    })?;
+
+    let todos: Result<Vec<TodoList>> = todo_iter.collect();
+    todos
+}

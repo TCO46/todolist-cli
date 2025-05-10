@@ -52,7 +52,11 @@ fn main() -> Result<()> {
             }
         }
         None => {
-            println!("Do nothing yet");
+            let todos = database::job::show_undone(&conn)?;
+
+            for todo in todos {
+                println!("{:?}", todo);
+            }
         }
     }
 
