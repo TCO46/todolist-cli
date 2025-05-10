@@ -40,8 +40,9 @@ fn main() -> Result<()> {
         }
         Some(Commands::Add { name, description }) => {
             let new_todo = TodoList::new(name, description);
-            let test = database::job::add_todo(&conn, &new_todo)?;
-            println!("{:?}", test);
+            database::job::add_todo(&conn, &new_todo)?;
+
+            println!("Added '{}'", name);
         }
         Some(Commands::Show) => {
             let todos = database::job::show_all(&conn)?;
