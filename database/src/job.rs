@@ -8,7 +8,7 @@ pub fn count(conn: &Connection, table_name: &str) -> Result<i64> {
         return Err(rusqlite::Error::InvalidQuery)
     }
 
-    let sql = format!("SELECT COUNT(*) FROM {}", table_name);
+    let sql = format!("SELECT COUNT(*) FROM {} WHERE done = 0", table_name);
     conn.query_row(&sql, [], |row| row.get(0))
 }
 
