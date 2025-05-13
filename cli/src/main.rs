@@ -26,7 +26,15 @@ enum Commands {
     },
 
     // Show all to do list
-    Show,
+    Show {
+        // Show all the todo list (include undone and done)
+        #[arg(short, long, num_args(0))]
+        all: bool,
+
+        // Show all the done todo list
+        #[arg(short, long, num_args(0))]
+        done: bool
+    },
 
     // Update status of todo to done
     Done { id: i32 }
@@ -47,11 +55,17 @@ fn main() -> Result<()> {
 
             println!("Added '{}'", name);
         }
-        Some(Commands::Show) => {
-            let todos = database::job::show_all(&conn)?;
-
-            for todo in todos {
-                println!("{:?}", todo);
+        Some(Commands::Show { all, done }) => {
+            match (all, done) {
+                (true, _) => {
+                    utils::show_all(&conn)?;
+                }
+                (false, true) => {
+                    utils::show_done(&conn)?;
+                }
+                (false, false) => {
+                    utils::show_undone(&conn)?;
+                }
             }
         }
         Some(Commands::Done { id }) => {
