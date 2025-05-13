@@ -51,6 +51,21 @@ pub fn show_undone(conn: &Connection) -> Result<Vec<TodoList>> {
     todos
 }
 
+pub fn get_done_todo(conn: &Connection) -> Result<Vec<TodoList>> {
+    let mut stmt = conn.prepare("SELECT * FROM todo WHERE done = 1")?;
+    let todo_iter = stmt.query_map([], |row| {
+        Ok(TodoList {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            description: row.get(2)?,
+            done: row.get(3)?
+        })
+    })?;
+
+    let todos: Result<Vec<TodoList>> = todo_iter.collect();
+    todos
+}
+
 pub fn done(conn: &Connection, id: i32) -> Result<()> {
     let sql = format!("UPDATE todo SET done = 1 WHERE id = {}", id);
     conn.execute(&sql, [])?;
