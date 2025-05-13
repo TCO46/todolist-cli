@@ -21,7 +21,7 @@ pub fn add_todo(conn: &Connection, todo: &TodoList) -> Result<()> {
     Ok(())
 }
 
-pub fn show_all(conn: &Connection) -> Result<Vec<TodoList>> {
+pub fn get_all_todo(conn: &Connection) -> Result<Vec<TodoList>> {
     let mut stmt = conn.prepare("SELECT * FROM todo")?;
     let todo_iter = stmt.query_map([], |row| {
         Ok(TodoList {
@@ -36,7 +36,7 @@ pub fn show_all(conn: &Connection) -> Result<Vec<TodoList>> {
     todos
 }
 
-pub fn show_undone(conn: &Connection) -> Result<Vec<TodoList>> {
+pub fn get_undone_todo(conn: &Connection) -> Result<Vec<TodoList>> {
     let mut stmt = conn.prepare("SELECT * FROM todo WHERE done = 0")?;
     let todo_iter = stmt.query_map([], |row| {
         Ok(TodoList {
