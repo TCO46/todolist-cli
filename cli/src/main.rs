@@ -73,11 +73,7 @@ fn main() -> Result<()> {
             println!("Done {}", id);
         }
         None => {
-            let todos = database::job::show_undone(&conn)?;
-
-            for todo in todos {
-                println!("{:?}", todo);
-            }
+            utils::show_undone(&conn)?;
         }
     }
 
