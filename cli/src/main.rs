@@ -1,5 +1,6 @@
-use database;
-use crate::database::models::todo::TodoList;
+use database::models::todo::TodoList;
+
+mod utils;
 use rusqlite::Result;
 use clap::{Parser, Subcommand};
 const DATABASE_PATH: &str = "test.db";
@@ -26,7 +27,24 @@ enum Commands {
     },
 
     // Show all to do list
-    Show
+    Show {
+        // Show all the todo list (include undone and done)
+        #[arg(short, long, num_args(0))]
+        all: bool,
+
+        // Show all the done todo list
+        #[arg(short, long, num_args(0))]
+        done: bool,
+
+    },
+    
+    // Show a to do using id
+    Id {
+        id: i32
+    },
+
+    // Update status of todo to done
+    Done { id: i32 },
 }
 
 fn main() -> Result<()> {
@@ -44,19 +62,28 @@ fn main() -> Result<()> {
 
             println!("Added '{}'", name);
         }
-        Some(Commands::Show) => {
-            let todos = database::job::show_all(&conn)?;
-
-            for todo in todos {
-                println!("{:?}", todo);
+        Some(Commands::Show { all, done }) => {
+            match (all, done) {
+                (true, _) => {
+                    utils::show_all(&conn)?;
+                }
+                (false, true) => {
+                    utils::show_done(&conn)?;
+                }
+                (false, false) => {
+                    utils::show_undone(&conn)?;
+                }
             }
         }
+        Some(Commands::Id { id }) => {
+            utils::show_todo_by_id(&conn, *id);
+        }
+        Some(Commands::Done { id }) => {
+            database::job::done(&conn, *id)?;
+            println!("Done {}", id);
+        }
         None => {
-            let todos = database::job::show_undone(&conn)?;
-
-            for todo in todos {
-                println!("{:?}", todo);
-            }
+            utils::show_undone(&conn)?;
         }
     }
 

@@ -21,7 +21,7 @@ pub fn add_todo(conn: &Connection, todo: &TodoList) -> Result<()> {
     Ok(())
 }
 
-pub fn show_all(conn: &Connection) -> Result<Vec<TodoList>> {
+pub fn get_all_todo(conn: &Connection) -> Result<Vec<TodoList>> {
     let mut stmt = conn.prepare("SELECT * FROM todo")?;
     let todo_iter = stmt.query_map([], |row| {
         Ok(TodoList {
@@ -36,7 +36,20 @@ pub fn show_all(conn: &Connection) -> Result<Vec<TodoList>> {
     todos
 }
 
-pub fn show_undone(conn: &Connection) -> Result<Vec<TodoList>> {
+pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {
+    let sql = format!("SELECT * FROM todo WHERE id = {}", id);
+    conn.query_row(&sql, [], |row| {
+        Ok(TodoList {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            description: row.get(2)?,
+            done: row.get(3)?
+        })
+    })
+
+}
+
+pub fn get_undone_todo(conn: &Connection) -> Result<Vec<TodoList>> {
     let mut stmt = conn.prepare("SELECT * FROM todo WHERE done = 0")?;
     let todo_iter = stmt.query_map([], |row| {
         Ok(TodoList {
@@ -49,4 +62,26 @@ pub fn show_undone(conn: &Connection) -> Result<Vec<TodoList>> {
 
     let todos: Result<Vec<TodoList>> = todo_iter.collect();
     todos
+}
+
+pub fn get_done_todo(conn: &Connection) -> Result<Vec<TodoList>> {
+    let mut stmt = conn.prepare("SELECT * FROM todo WHERE done = 1")?;
+    let todo_iter = stmt.query_map([], |row| {
+        Ok(TodoList {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            description: row.get(2)?,
+            done: row.get(3)?
+        })
+    })?;
+
+    let todos: Result<Vec<TodoList>> = todo_iter.collect();
+    todos
+}
+
+pub fn done(conn: &Connection, id: i32) -> Result<()> {
+    let sql = format!("UPDATE todo SET done = 1 WHERE id = {}", id);
+    conn.execute(&sql, [])?;
+
+    Ok(())
 }
