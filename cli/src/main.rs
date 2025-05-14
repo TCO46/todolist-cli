@@ -10,7 +10,7 @@ const DATABASE_PATH: &str = "test.db";
 #[command(propagate_version = true)]
 struct Cli {
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Commands,
 }
 
 #[derive(Subcommand)]
@@ -35,7 +35,6 @@ enum Commands {
         // Show all the done todo list
         #[arg(short, long, num_args(0))]
         done: bool,
-
     },
     
     // Show a to do using id
@@ -45,6 +44,17 @@ enum Commands {
 
     // Update status of todo to done
     Done { id: i32 },
+
+    // Update Name or Description
+    Update {
+        id: i32,
+
+        #[arg(short, long)]
+        name: Option<String>,
+
+        #[arg(short, long)]
+        description: Option<String>,
+    }
 }
 
 fn main() -> Result<()> {
@@ -52,38 +62,44 @@ fn main() -> Result<()> {
     let conn = database::connect_db(DATABASE_PATH)?;
     database::init_db(&conn)?;
 
-    match &cli.command {
-        Some(Commands::Count) => {
+    match cli.command {
+        Commands::Count => {
             println!("{:?}", database::job::count(&conn, "todo").unwrap());
         }
-        Some(Commands::Add { name, description }) => {
-            let new_todo = TodoList::new(name, description);
+        Commands::Add { name, description } => {
+            let new_todo = TodoList::new(&name, &description);
             database::job::add_todo(&conn, &new_todo)?;
 
             println!("Added '{}'", name);
         }
-        Some(Commands::Show { all, done }) => {
-            match (all, done) {
-                (true, _) => {
-                    utils::show_all(&conn)?;
-                }
-                (false, true) => {
-                    utils::show_done(&conn)?;
-                }
-                (false, false) => {
-                    utils::show_undone(&conn)?;
-                }
+        Commands::Show { all, done } => {
+            if let true = all {
+                utils::show_all(&conn)?;
+            } else if let true = done {
+                utils::show_done(&conn)?;
+            } else {
+                utils::show_undone(&conn)?;
             }
         }
-        Some(Commands::Id { id }) => {
-            utils::show_todo_by_id(&conn, *id);
+        Commands::Id { id } => {
+        utils::show_todo_by_id(&conn, id);
         }
-        Some(Commands::Done { id }) => {
-            database::job::done(&conn, *id)?;
+        Commands::Done { id } => {
+            database::job::done(&conn, id)?;
             println!("Done {}", id);
         }
-        None => {
-            utils::show_undone(&conn)?;
+        Commands::Update { id, name, description } => {
+            if let Some(name) = name {
+                match database::job::update_todo_name(&conn, id, name) {
+                    Ok(()) => println!("Updated {id}"),
+                    Err(_) => eprintln!("No to do found with ID {id}"),
+                }
+            } else if let Some(description) = description {
+                match database::job::update_todo_description(&conn, id, description) {
+                    Ok(()) => println!("Updated {id}"),
+                    Err(_) => eprintln!("No to do found with ID {id}"),
+                }
+            }
         }
     }
 

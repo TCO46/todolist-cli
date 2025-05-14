@@ -21,6 +21,30 @@ pub fn add_todo(conn: &Connection, todo: &TodoList) -> Result<()> {
     Ok(())
 }
 
+pub fn update_todo_name(conn: &Connection, id: i32, name: String) -> Result<()> {
+    let mut stmt = conn.prepare("UPDATE todo SET name = ? WHERE id = ?")?;
+
+    let row_affected = stmt.execute(params![name, id])?;
+
+    if row_affected == 0 {
+        return Err(rusqlite::Error::StatementChangedRows(0));
+    }
+
+    Ok(())
+}
+
+pub fn update_todo_description(conn: &Connection, id: i32, description: String) -> Result<()> {
+    let mut stmt = conn.prepare("UPDATE todo SET description = ? WHERE id = ?")?;
+
+    let row_affected = stmt.execute(params![description, id])?;
+
+    if row_affected == 0 {
+        return Err(rusqlite::Error::StatementChangedRows(0));
+    }
+
+    Ok(())
+}
+
 pub fn get_all_todo(conn: &Connection) -> Result<Vec<TodoList>> {
     let mut stmt = conn.prepare("SELECT * FROM todo")?;
     let todo_iter = stmt.query_map([], |row| {
@@ -37,7 +61,7 @@ pub fn get_all_todo(conn: &Connection) -> Result<Vec<TodoList>> {
 }
 
 pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {
-    let sql = format!("SELECT * FROM todo WHERE id = {}", id);
+    let sql = format!("SELECT * FROM todo WHERE id = {id}");
     conn.query_row(&sql, [], |row| {
         Ok(TodoList {
             id: row.get(0)?,
@@ -46,7 +70,6 @@ pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {
             done: row.get(3)?
         })
     })
-
 }
 
 pub fn get_undone_todo(conn: &Connection) -> Result<Vec<TodoList>> {
