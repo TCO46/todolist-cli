@@ -89,17 +89,7 @@ fn main() -> Result<()> {
             println!("Done {}", id);
         }
         Commands::Update { id, name, description } => {
-            if let Some(name) = name {
-                match database::job::update_todo_name(&conn, id, name) {
-                    Ok(()) => println!("Updated {id}"),
-                    Err(_) => eprintln!("No to do found with ID {id}"),
-                }
-            } else if let Some(description) = description {
-                match database::job::update_todo_description(&conn, id, description) {
-                    Ok(()) => println!("Updated {id}"),
-                    Err(_) => eprintln!("No to do found with ID {id}"),
-                }
-            }
+            database::job::update_todo(&conn, id, name.as_deref(), description.as_deref())?;
         }
     }
 
