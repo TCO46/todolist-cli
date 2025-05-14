@@ -46,7 +46,6 @@ pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {
             done: row.get(3)?
         })
     })
-
 }
 
 pub fn get_undone_todo(conn: &Connection) -> Result<Vec<TodoList>> {
