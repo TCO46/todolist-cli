@@ -15,10 +15,10 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    // Count the numbers of to do
+    /// Count the numbers of to do
     Count,
 
-    // Add new to do
+    /// Add new to do
     Add { 
         name: String,
 
@@ -26,32 +26,33 @@ enum Commands {
         description: String
     },
 
-    // Show all to do list
+    /// Show all to do list
     Show {
-        // Show all the todo list (include undone and done)
+        /// Show all the todo list (include undone and done)
         #[arg(short, long, num_args(0))]
         all: bool,
 
-        // Show all the done todo list
+        /// Show all the done todo list
         #[arg(short, long, num_args(0))]
         done: bool,
     },
     
-    // Show a to do using id
+    /// Show a to do using id
     Id {
         id: i32
     },
 
-    // Update status of todo to done
+    /// Update status of todo to done
     Done { id: i32 },
 
-    // Update Name or Description
+    /// Update Name or Description
     Update {
         id: i32,
-
+        /// Specify name to update
         #[arg(short, long)]
         name: Option<String>,
-
+        
+        /// Specify description to update
         #[arg(short, long)]
         description: Option<String>,
     }
