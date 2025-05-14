@@ -1,4 +1,4 @@
-use rusqlite::{params, Connection, Result};
+use rusqlite::{params, Connection, Result, ToSql};
 use crate::models::todo::TodoList;
 
 pub fn count(conn: &Connection, table_name: &str) -> Result<i64> {
@@ -21,27 +21,29 @@ pub fn add_todo(conn: &Connection, todo: &TodoList) -> Result<()> {
     Ok(())
 }
 
-pub fn update_todo_name(conn: &Connection, id: i32, name: String) -> Result<()> {
-    let mut stmt = conn.prepare("UPDATE todo SET name = ? WHERE id = ?")?;
+pub fn update_todo(conn: &Connection, id: i32, name: Option<&str>, description: Option<&str>) -> Result<()> {
+    let mut updates = vec![];
+    let mut values: Vec<Box<dyn ToSql>> = Vec::new();
 
-    let row_affected = stmt.execute(params![name, id])?;
+    if let Some(name) = name {
+        updates.push("name = ?");
+        values.push(Box::new(name));
+    }
+
+    if let Some(description) = description {
+        updates.push("description = ?");
+        values.push(Box::new(description));
+    }
+    let param_refs: Vec<&dyn ToSql> = values.iter().map(|b| b.as_ref()).collect();
+
+    let sql = format!("UPDATE todo SET {} where id = {id}", updates.join(", "));
+    let mut stmt = conn.prepare(&sql)?;
+
+    let row_affected = stmt.execute(param_refs.as_slice())?;
 
     if row_affected == 0 {
         return Err(rusqlite::Error::StatementChangedRows(0));
     }
-
-    Ok(())
-}
-
-pub fn update_todo_description(conn: &Connection, id: i32, description: String) -> Result<()> {
-    let mut stmt = conn.prepare("UPDATE todo SET description = ? WHERE id = ?")?;
-
-    let row_affected = stmt.execute(params![description, id])?;
-
-    if row_affected == 0 {
-        return Err(rusqlite::Error::StatementChangedRows(0));
-    }
-
     Ok(())
 }
 
