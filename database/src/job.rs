@@ -58,8 +58,12 @@ pub fn get_all_todo(conn: &Connection) -> Result<Vec<TodoList>> {
         })
     })?;
 
-    let todos: Result<Vec<TodoList>> = todo_iter.collect();
-    todos
+    let mut result = Vec::new();
+    for todo in todo_iter {
+        result.push(todo?);
+    }
+
+    Ok(result)
 }
 
 pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {

@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Debug)]
 pub struct TodoList {
     pub id: i32,
@@ -16,3 +18,18 @@ impl TodoList {
         }
     }
 }
+
+
+impl fmt::Display for TodoList {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "[#{}] {} — {} [{}]",
+            self.id,
+            self.name,
+            self.description,
+            if self.done == 1 { "✔ done" } else { "⧗ pending" }
+        )
+    }
+}
+
