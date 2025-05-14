@@ -35,7 +35,6 @@ enum Commands {
         // Show all the done todo list
         #[arg(short, long, num_args(0))]
         done: bool,
-
     },
     
     // Show a to do using id
@@ -45,6 +44,17 @@ enum Commands {
 
     // Update status of todo to done
     Done { id: i32 },
+
+    // Update Name or Description
+    Update {
+        id: i32,
+
+        #[arg(short, long)]
+        name: Option<String>,
+
+        #[arg(short, long)]
+        description: Option<String>,
+    }
 }
 
 fn main() -> Result<()> {
@@ -69,7 +79,6 @@ fn main() -> Result<()> {
                 utils::show_done(&conn)?;
             } else {
                 utils::show_undone(&conn)?;
-
             }
         }
         Commands::Id { id } => {
@@ -78,6 +87,19 @@ fn main() -> Result<()> {
         Commands::Done { id } => {
             database::job::done(&conn, id)?;
             println!("Done {}", id);
+        }
+        Commands::Update { id, name, description } => {
+            if let Some(name) = name {
+                match database::job::update_todo_name(&conn, id, name) {
+                    Ok(()) => println!("Updated {id}"),
+                    Err(_) => eprintln!("No to do found with ID {id}"),
+                }
+            } else if let Some(description) = description {
+                match database::job::update_todo_description(&conn, id, description) {
+                    Ok(()) => println!("Updated {id}"),
+                    Err(_) => eprintln!("No to do found with ID {id}"),
+                }
+            }
         }
     }
 
