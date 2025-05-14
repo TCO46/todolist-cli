@@ -36,6 +36,19 @@ pub fn get_all_todo(conn: &Connection) -> Result<Vec<TodoList>> {
     todos
 }
 
+pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {
+    let sql = format!("SELECT * FROM todo WHERE id = {}", id);
+    conn.query_row(&sql, [], |row| {
+        Ok(TodoList {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            description: row.get(2)?,
+            done: row.get(3)?
+        })
+    })
+
+}
+
 pub fn get_undone_todo(conn: &Connection) -> Result<Vec<TodoList>> {
     let mut stmt = conn.prepare("SELECT * FROM todo WHERE done = 0")?;
     let todo_iter = stmt.query_map([], |row| {

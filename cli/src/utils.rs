@@ -1,4 +1,4 @@
-use database::job::{get_all_todo, get_done_todo, get_undone_todo};
+use database::job::{get_all_todo, get_done_todo, get_todo_by_id, get_undone_todo};
 use rusqlite::{Connection, Result};
 
 pub fn show_all(conn: &Connection) -> Result<()> {
@@ -26,4 +26,9 @@ pub fn show_done(conn: &Connection) -> Result<()> {
     }
 
     Ok(())
+}
+
+pub fn show_todo_by_id(conn: &Connection, id: i32) {
+    let todo = get_todo_by_id(&conn, id);
+    println!("{:?}", todo);
 }
