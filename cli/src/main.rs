@@ -3,7 +3,7 @@ use database::models::todo::TodoList;
 mod utils;
 use rusqlite::Result;
 use clap::{Parser, Subcommand};
-const DATABASE_PATH: &str = "test.db";
+const DATABASE_PATH: &str = "todo.db";
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
