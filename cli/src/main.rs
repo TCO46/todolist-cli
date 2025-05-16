@@ -89,6 +89,13 @@ fn main() -> Result<()> {
         }
         Commands::Update { id, name, description } => {
             database::job::update_todo(&conn, id, name.as_deref(), description.as_deref())?;
+
+            if let Some(n) = name {
+                println!("TODO (ID {id:?}) name updated with: {n:?}");
+            }
+            else if let Some(d) = description {
+                println!("TODO (ID {id:?}) description updated with: {d:?}");
+            }
         }
     }
 
