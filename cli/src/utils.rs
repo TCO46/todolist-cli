@@ -42,5 +42,5 @@ pub fn show_done(conn: &Connection) -> Result<()> {
 
 pub fn show_todo_by_id(conn: &Connection, id: i32) {
     let todo = get_todo_by_id(&conn, id);
-    println!("{:?}", todo.unwrap());
+    println!("{}", todo.unwrap());
 }

@@ -35,11 +35,10 @@ enum Commands {
         /// Show all the done todo list
         #[arg(short, long, num_args(0))]
         done: bool,
-    },
-    
-    /// Show a to do using id
-    Id {
-        id: i32
+        
+        /// Show todo by id
+        #[arg(long)]
+        id: Option<i32>
     },
 
     /// Update status of todo to done
@@ -73,17 +72,16 @@ fn main() -> Result<()> {
 
             println!("Added '{}'", name);
         }
-        Commands::Show { all, done } => {
+        Commands::Show { all, done, id } => {
             if let true = all {
                 utils::show_all(&conn)?;
             } else if let true = done {
                 utils::show_done(&conn)?;
+            } else if let Some(i) = id {
+                utils::show_todo_by_id(&conn, i);
             } else {
                 utils::show_undone(&conn)?;
             }
-        }
-        Commands::Id { id } => {
-        utils::show_todo_by_id(&conn, id);
         }
         Commands::Done { id } => {
             database::job::done(&conn, id)?;
