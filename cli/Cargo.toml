@@ -7,3 +7,4 @@ edition = "2021"
 database = { workspace = true }
 rusqlite = { version = "0.35.0", features = ["bundled"] }
 clap = { version = "4.5.37", features = ["derive"] }
+console = "0.15.11"
