@@ -23,7 +23,11 @@ enum Commands {
         name: String,
 
         #[arg(short, long, default_value = "none")]
-        description: String
+        description: String,
+        
+        /// Add priority to todo from 1-4
+        #[arg(short, long, default_value_t = 1)]
+        priority: u8
     },
 
     /// Show all to do list
@@ -66,8 +70,8 @@ fn main() -> Result<()> {
         Commands::Count => {
             println!("{:?}", database::job::count(&conn, "todo").unwrap());
         }
-        Commands::Add { name, description } => {
-            let new_todo = TodoList::new(&name, &description);
+        Commands::Add { name, description, priority } => {
+            let new_todo = TodoList::new(&name, &description, priority);
             database::job::add_todo(&conn, &new_todo)?;
 
             println!("Added '{}'", name);
