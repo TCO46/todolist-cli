@@ -14,8 +14,8 @@ pub fn count(conn: &Connection, table_name: &str) -> Result<i64> {
 
 pub fn add_todo(conn: &Connection, todo: &TodoList) -> Result<()> {
     conn.execute(
-        "INSERT INTO todo (name, description, done) VALUES (?1, ?2, ?3)",
-        params![todo.name, todo.description, todo.done],
+        "INSERT INTO todo (name, description, priority, done) VALUES (?1, ?2, ?3, ?4)",
+        params![todo.name, todo.description, todo.priority, todo.done],
     )?;
 
     Ok(())
@@ -54,7 +54,8 @@ pub fn get_all_todo(conn: &Connection) -> Result<Vec<TodoList>> {
             id: row.get(0)?,
             name: row.get(1)?,
             description: row.get(2)?,
-            done: row.get(3)?
+            priority: row.get(3)?,
+            done: row.get(4)?
         })
     })?;
 
@@ -73,7 +74,8 @@ pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {
             id: row.get(0)?,
             name: row.get(1)?,
             description: row.get(2)?,
-            done: row.get(3)?
+            priority: row.get(3)?,
+            done: row.get(4)?
         })
     })
 }
@@ -85,7 +87,8 @@ pub fn get_undone_todo(conn: &Connection) -> Result<Vec<TodoList>> {
             id: row.get(0)?,
             name: row.get(1)?,
             description: row.get(2)?,
-            done: row.get(3)?
+            priority: row.get(3)?,
+            done: row.get(4)?
         })
     })?;
 
@@ -100,7 +103,8 @@ pub fn get_done_todo(conn: &Connection) -> Result<Vec<TodoList>> {
             id: row.get(0)?,
             name: row.get(1)?,
             description: row.get(2)?,
-            done: row.get(3)?
+            priority: row.get(3)?,
+            done: row.get(4)?
         })
     })?;
 

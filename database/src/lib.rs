@@ -13,6 +13,7 @@ pub fn init_db(conn: &Connection) -> Result<()> {
                   id              INTEGER PRIMARY KEY,
                   name            TEXT NOT NULL,
                   description     TEXT DEFAULT 'none',
+                  priority        INTEGER,
                   done            INTEGER
                   )",
         [],
