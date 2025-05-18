@@ -29,7 +29,7 @@ impl fmt::Display for TodoList {
             self.id,
             self.name,
             self.description,
-            if self.done == 1 { "✔ done" } else { "⧗ pending" }
+            if self.done == 1 { "✔ Done" } else { "⧗ In Progress" }
         )
     }
 }
