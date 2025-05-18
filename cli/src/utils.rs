@@ -48,18 +48,18 @@ pub fn show_todo_by_id(conn: &Connection, id: i32) {
 }
 
 fn print_priority_color(todo: TodoList) -> Result<()> {
-        let todo_done: i32 = todo.done;
-        if todo_done == 1 {
-            println!("{}", style(&todo).green())
-        } else {
-            match &todo.priority {
-                1 => println!("{}", style(todo).color256(8)),
-                2 => println!("{}", style(todo).yellow()),
-                3 => println!("{}", style(todo).color256(208)),
-                4 => println!("{}", style(todo).red()),
-                0_u8 | 5_u8..=u8::MAX => todo!()
-            }
+    let todo_done: i32 = todo.done;
+    if todo_done == 1 {
+        println!("{}", style(&todo).green())
+    } else {
+        match &todo.priority {
+            1 => println!("{}", style(todo).color256(8)),
+            2 => println!("{}", style(todo).yellow()),
+            3 => println!("{}", style(todo).color256(208)),
+            4 => println!("{}", style(todo).red()),
+            0_u8 | 5_u8..=u8::MAX => todo!()
         }
+    }
     
     Ok(())
 }
