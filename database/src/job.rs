@@ -113,8 +113,18 @@ pub fn get_done_todo(conn: &Connection) -> Result<Vec<TodoList>> {
 }
 
 pub fn done(conn: &Connection, id: i32) -> Result<()> {
+    let todo = get_todo_by_id(&conn, id);
+    if todo.unwrap().done == 1 {
+        return Err(rusqlite::Error::QueryReturnedNoRows)
+    }
+
     let sql = format!("UPDATE todo SET done = 1 WHERE id = {}", id);
-    conn.execute(&sql, [])?;
+    let mut stmt = conn.prepare(&sql)?;
+    let row_affected = stmt.execute([])?;
+
+    if row_affected == 0 {
+        return Err(rusqlite::Error::StatementChangedRows(0));
+    }
 
     Ok(())
 }
