@@ -58,6 +58,11 @@ enum Commands {
         /// Specify description to update
         #[arg(short, long)]
         description: Option<String>,
+    },
+
+    ///Delete a todo
+    Delete {
+        id: i32
     }
 }
 
@@ -100,6 +105,10 @@ fn main() -> Result<()> {
             else if let Some(d) = description {
                 println!("TODO (ID {id:?}) description updated with: {d:?}");
             }
+        }
+        Commands::Delete { id } => {
+            database::job::delete_todo(&conn, id)?;
+            println!("Deleted ({id})")
         }
     }
 
