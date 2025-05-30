@@ -22,7 +22,7 @@ pub fn add_todo(conn: &Connection, todo: &TodoList) -> Result<()> {
 }
 
 pub fn delete_todo(conn: &Connection, id: i32) -> Result<()> {
-    let sql = format!("DELETE todo where id = {id}");
+    let sql = format!("DELETE FROM todo WHERE id = {id}");
     let mut stmt = conn.prepare(&sql)?;
 
     let row_affected = stmt.execute([])?;
