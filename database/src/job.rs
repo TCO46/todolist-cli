@@ -21,6 +21,18 @@ pub fn add_todo(conn: &Connection, todo: &TodoList) -> Result<()> {
     Ok(())
 }
 
+pub fn delete_todo(conn: &Connection, id: i32) -> Result<()> {
+    let sql = format!("DELETE todo where id = {id}");
+    let mut stmt = conn.prepare(&sql)?;
+
+    let row_affected = stmt.execute([])?;
+
+    if row_affected == 0 {
+        return Err(rusqlite::Error::StatementChangedRows(0));
+    }
+    Ok(())
+}
+
 pub fn update_todo(conn: &Connection, id: i32, name: Option<&str>, description: Option<&str>) -> Result<()> {
     let mut updates = vec![];
     let mut values: Vec<Box<dyn ToSql>> = Vec::new();
