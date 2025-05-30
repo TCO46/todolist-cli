@@ -53,7 +53,7 @@ fn print_priority_color(todo: TodoList) -> Result<()> {
         println!("{}", style(&todo).green())
     } else {
         match &todo.priority {
-            1 => println!("{}", style(todo).color256(8)),
+            1 => println!("{}", todo),
             2 => println!("{}", style(todo).yellow()),
             3 => println!("{}", style(todo).color256(208)),
             4 => println!("{}", style(todo).red()),
