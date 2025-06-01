@@ -1,4 +1,5 @@
 use database::models::todo::TodoList;
+use database::models::sort::Sort;
 
 mod utils;
 use rusqlite::Result;
@@ -12,6 +13,7 @@ struct Cli {
     #[command(subcommand)]
     command: Commands,
 }
+
 
 #[derive(Subcommand)]
 enum Commands {
@@ -42,7 +44,11 @@ enum Commands {
         
         /// Show todo by id
         #[arg(long)]
-        id: Option<i32>
+        id: Option<i32>,
+
+        /// Sort todo
+        #[clap(value_enum)]
+        sort: Option<Sort>
     },
 
     /// Update status of todo to done
@@ -81,15 +87,15 @@ fn main() -> Result<()> {
 
             println!("Added '{}'", name);
         }
-        Commands::Show { all, done, id } => {
+        Commands::Show { all, done, id, sort } => {
             if let true = all {
-                utils::show_all(&conn)?;
+                utils::show_all(&conn, sort)?;
             } else if let true = done {
                 utils::show_done(&conn)?;
             } else if let Some(i) = id {
                 utils::show_todo_by_id(&conn, i);
             } else {
-                utils::show_undone(&conn)?;
+                utils::show_undone(&conn, sort)?;
             }
         }
         Commands::Done { id } => {

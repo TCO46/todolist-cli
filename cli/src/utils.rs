@@ -1,10 +1,11 @@
-use database::{job::{get_all_todo, get_done_todo, get_todo_by_id, get_undone_todo}, models::todo::TodoList};
+use database::{job::{get_all_todo, get_done_todo, get_todo_by_id, get_undone_todo}, models::todo::TodoList, models::sort::Sort};
 use rusqlite::{Connection, Result};
 
 use console::style;
 
-pub fn show_all(conn: &Connection) -> Result<()> {
-    match get_all_todo(&conn) {
+
+pub fn show_all(conn: &Connection, sort: Option<Sort>) -> Result<()> {
+    match get_all_todo(&conn, sort) {
         Ok(values) => {
             for val in values {
                 print_priority_color(val)?;
@@ -16,8 +17,8 @@ pub fn show_all(conn: &Connection) -> Result<()> {
     Ok(())
 }
 
-pub fn show_undone(conn: &Connection) -> Result<()> {
-    match get_undone_todo(&conn) {
+pub fn show_undone(conn: &Connection, sort: Option<Sort>) -> Result<()> {
+    match get_undone_todo(&conn, sort) {
         Ok(values) => {
             for val in values {
                 print_priority_color(val)?;
