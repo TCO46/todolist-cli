@@ -20,8 +20,9 @@ enum Commands {
 
     /// Add new to do
     Add { 
+        /// Add name to todo
         name: String,
-
+        /// Add description to todo
         #[arg(short, long, default_value = "none")]
         description: String,
         
