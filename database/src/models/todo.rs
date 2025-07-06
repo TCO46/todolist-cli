@@ -6,7 +6,7 @@ pub struct TodoList {
     pub name: String,
     pub description: String,
     pub priority: u8,
-    pub done: i32
+    pub done: i32,
 }
 
 impl TodoList {
@@ -28,8 +28,11 @@ impl fmt::Display for TodoList {
             "{} — {} [{}]",
             self.name,
             self.description,
-            if self.done == 1 { "✔ Done" } else { "⧗ In Progress" }
+            if self.done == 1 {
+                "✔ Done"
+            } else {
+                "⧗ In Progress"
+            }
         )
     }
 }
-
