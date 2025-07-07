@@ -25,14 +25,15 @@ impl fmt::Display for TodoList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{} — {} [{}]",
+            "{} — {} [{}] (id: {})",
             self.name,
             self.description,
             if self.done == 1 {
                 "✔ Done"
             } else {
                 "⧗ In Progress"
-            }
+            },
+            self.id
         )
     }
 }
