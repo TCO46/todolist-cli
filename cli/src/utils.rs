@@ -50,7 +50,7 @@ pub fn show_todo_by_id(conn: &Connection, id: i32) {
 fn print_priority_color(idx: usize, todo: &TodoList) -> Result<()> {
     let todo_done: i32 = todo.done;
     if todo_done == 1 {
-        println!("{}", style(&todo).green())
+        println!("{}. {}", idx + 1, style(&todo).green())
     } else {
         match &todo.priority {
             1 => println!("{}. {}", idx + 1, style(todo).cyan()),
