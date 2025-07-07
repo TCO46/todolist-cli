@@ -1,4 +1,5 @@
 use crate::models::todo::TodoList;
+use crate::models::sort::Sort;
 use rusqlite::{params, Connection, Result, ToSql};
 
 pub fn count(conn: &Connection, table_name: &str) -> Result<i64> {
@@ -22,12 +23,19 @@ pub fn add_todo(conn: &Connection, todo: &TodoList) -> Result<()> {
     Ok(())
 }
 
-pub fn update_todo(
-    conn: &Connection,
-    id: i32,
-    name: Option<&str>,
-    description: Option<&str>,
-) -> Result<()> {
+pub fn delete_todo(conn: &Connection, id: i32) -> Result<()> {
+    let sql = format!("DELETE FROM todo WHERE id = {id}");
+    let mut stmt = conn.prepare(&sql)?;
+
+    let row_affected = stmt.execute([])?;
+
+    if row_affected == 0 {
+        return Err(rusqlite::Error::StatementChangedRows(0));
+    }
+    Ok(())
+}
+
+pub fn update_todo(conn: &Connection, id: i32, name: Option<&str>, description: Option<&str>) -> Result<()> {
     let mut updates = vec![];
     let mut values: Vec<Box<dyn ToSql>> = Vec::new();
 
@@ -40,6 +48,7 @@ pub fn update_todo(
         updates.push("description = ?");
         values.push(Box::new(description));
     }
+
     let param_refs: Vec<&dyn ToSql> = values.iter().map(|b| b.as_ref()).collect();
 
     let sql = format!("UPDATE todo SET {} where id = {id}", updates.join(", "));
@@ -53,8 +62,22 @@ pub fn update_todo(
     Ok(())
 }
 
-pub fn get_all_todo(conn: &Connection) -> Result<Vec<TodoList>> {
-    let mut stmt = conn.prepare("SELECT * FROM todo")?;
+pub fn get_all_todo(conn: &Connection, sort: Option<Sort>) -> Result<Vec<TodoList>> {
+    let mut options = vec![];
+
+    match sort {
+        Some(Sort::Name) => {
+            options.push("ORDER BY name");
+        }
+        Some(Sort::Priority) => {
+            options.push("ORDER BY priority");
+        }
+        None => print!("")
+    }
+
+    let sql = format!("SELECT * FROM todo {}", options.join(" "));
+
+    let mut stmt = conn.prepare(&sql)?;
     let todo_iter = stmt.query_map([], |row| {
         Ok(TodoList {
             id: row.get(0)?,
@@ -86,8 +109,23 @@ pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {
     })
 }
 
-pub fn get_undone_todo(conn: &Connection) -> Result<Vec<TodoList>> {
-    let mut stmt = conn.prepare("SELECT * FROM todo WHERE done = 0")?;
+pub fn get_undone_todo(conn: &Connection, sort: Option<Sort>) -> Result<Vec<TodoList>> {
+    let mut options = vec![];
+
+    match sort {
+        Some(Sort::Name) => {
+            options.push("ORDER BY name");
+        }
+        Some(Sort::Priority) => {
+            options.push("ORDER BY priority");
+        }
+        None => print!("")
+    }
+
+    let sql = format!("SELECT * FROM todo WHERE done = 0 {}", options.join(" "));
+
+    let mut stmt = conn.prepare(&sql)?;
+    // let mut stmt = conn.prepare("SELECT * FROM todo WHERE done = 0")?;
     let todo_iter = stmt.query_map([], |row| {
         Ok(TodoList {
             id: row.get(0)?,

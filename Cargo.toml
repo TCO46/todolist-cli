@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [ "cli","database"]
+members = ["cli","database"]
 
 [workspace.dependencies]
 clap = { version = "4.5.37", features = ["derive"] }

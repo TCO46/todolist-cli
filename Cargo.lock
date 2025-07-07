@@ -130,6 +130,7 @@ dependencies = [
 name = "database"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rusqlite",
 ]
 
@@ -278,7 +279,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "todo"
+name = "tdl"
 version = "0.1.0"
 dependencies = [
  "clap",

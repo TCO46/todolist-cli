@@ -1,4 +1,5 @@
 use database::models::todo::TodoList;
+use database::models::sort::Sort;
 
 mod utils;
 use clap::{Parser, Subcommand};
@@ -12,6 +13,7 @@ struct Cli {
     #[command(subcommand)]
     command: Commands,
 }
+
 
 #[derive(Subcommand)]
 enum Commands {
@@ -44,6 +46,10 @@ enum Commands {
         /// Show todo by id
         #[arg(long)]
         id: Option<i32>,
+      
+        /// Sort todo
+        #[clap(value_enum)]
+        sort: Option<Sort>
     },
 
     /// Update status of todo to done
@@ -60,6 +66,11 @@ enum Commands {
         #[arg(short, long)]
         description: Option<String>,
     },
+
+    ///Delete a todo
+    Delete {
+        id: i32
+    }
 }
 
 fn main() -> Result<()> {
@@ -81,15 +92,15 @@ fn main() -> Result<()> {
 
             println!("Added '{}'", name);
         }
-        Commands::Show { all, done, id } => {
+        Commands::Show { all, done, id, sort } => {
             if all {
-                utils::show_all(&conn)?;
+                utils::show_all(&conn, sort)?;
             } else if done {
                 utils::show_done(&conn)?;
             } else if let Some(i) = id {
                 utils::show_todo_by_id(&conn, i);
             } else {
-                utils::show_undone(&conn)?;
+                utils::show_undone(&conn, sort)?;
             }
         }
         Commands::Done { id } => {
@@ -108,6 +119,10 @@ fn main() -> Result<()> {
             } else if let Some(d) = description {
                 println!("TODO (ID {id:?}) description updated with: {d:?}");
             }
+        }
+        Commands::Delete { id } => {
+            database::job::delete_todo(&conn, id)?;
+            println!("Deleted ({id})")
         }
     }
 
