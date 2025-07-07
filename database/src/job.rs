@@ -1,12 +1,13 @@
-use rusqlite::{params, Connection, Result, ToSql};
 use crate::models::todo::TodoList;
 use crate::models::sort::Sort;
+use rusqlite::{params, Connection, Result, ToSql};
 
 pub fn count(conn: &Connection, table_name: &str) -> Result<i64> {
-    let mut stmt = conn.prepare("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?1")?;
+    let mut stmt =
+        conn.prepare("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?1")?;
     let exists: i64 = stmt.query_row([table_name], |row| row.get(0))?;
     if exists == 0 {
-        return Err(rusqlite::Error::InvalidQuery)
+        return Err(rusqlite::Error::InvalidQuery);
     }
 
     let sql = format!("SELECT COUNT(*) FROM {} WHERE done = 0", table_name);
@@ -83,7 +84,7 @@ pub fn get_all_todo(conn: &Connection, sort: Option<Sort>) -> Result<Vec<TodoLis
             name: row.get(1)?,
             description: row.get(2)?,
             priority: row.get(3)?,
-            done: row.get(4)?
+            done: row.get(4)?,
         })
     })?;
 
@@ -103,7 +104,7 @@ pub fn get_todo_by_id(conn: &Connection, id: i32) -> Result<TodoList> {
             name: row.get(1)?,
             description: row.get(2)?,
             priority: row.get(3)?,
-            done: row.get(4)?
+            done: row.get(4)?,
         })
     })
 }
@@ -131,7 +132,7 @@ pub fn get_undone_todo(conn: &Connection, sort: Option<Sort>) -> Result<Vec<Todo
             name: row.get(1)?,
             description: row.get(2)?,
             priority: row.get(3)?,
-            done: row.get(4)?
+            done: row.get(4)?,
         })
     })?;
 
@@ -147,7 +148,7 @@ pub fn get_done_todo(conn: &Connection) -> Result<Vec<TodoList>> {
             name: row.get(1)?,
             description: row.get(2)?,
             priority: row.get(3)?,
-            done: row.get(4)?
+            done: row.get(4)?,
         })
     })?;
 
@@ -156,8 +157,18 @@ pub fn get_done_todo(conn: &Connection) -> Result<Vec<TodoList>> {
 }
 
 pub fn done(conn: &Connection, id: i32) -> Result<()> {
+    let todo = get_todo_by_id(conn, id);
+    if todo.unwrap().done == 1 {
+        return Err(rusqlite::Error::QueryReturnedNoRows);
+    }
+
     let sql = format!("UPDATE todo SET done = 1 WHERE id = {}", id);
-    conn.execute(&sql, [])?;
+    let mut stmt = conn.prepare(&sql)?;
+    let row_affected = stmt.execute([])?;
+
+    if row_affected == 0 {
+        return Err(rusqlite::Error::StatementChangedRows(0));
+    }
 
     Ok(())
 }
